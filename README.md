@@ -44,8 +44,8 @@
 1. Create a `.env` file in the root of your project with the following content:
 
 ```
-DATABASE_URL="mysql://root:password@db:3306/database"
-DATABASE_PORT=3306
+DATABASE_URL="mysql://root:password@db:port/database"
+DATABASE_PORT=port
 DATABASE_PASSWORD="your_password_here"
 DATABASE_IMAGE="mysql:8"
 ```
