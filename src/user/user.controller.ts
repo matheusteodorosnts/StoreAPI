@@ -1,6 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { UserDTO } from 'src/auth/DTO/user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {
@@ -31,6 +40,24 @@ export class UserController {
         id: true,
         name: true,
         email: true,
+      },
+    });
+
+    return {
+      user,
+    };
+  }
+
+  @Get(':iduser')
+  @UseGuards(AuthGuard('jwt'))
+  async getSpecificUser(@Param('iduser') iduser: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: iduser },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
       },
     });
 
