@@ -2,16 +2,22 @@ import {
   Body,
   Controller,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { UserDTO } from './DTO/user.dto';
 import * as argon2 from 'argon2';
+import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private jwtService: JwtService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true }))
@@ -30,12 +36,17 @@ export class AuthController {
       },
     });
 
+    const payload = { sub: user.id, username: user.name };
+    const acess_token = this.jwtService.sign(payload);
+
     return {
       user,
+      acess_token,
     };
   }
 
   @Post('login')
+  @UseGuards(AuthGuard('jwt'))
   async loginUser(@Body() data: UserDTO) {
     const user = await this.prisma.user.findUnique({
       where: { email: data.email },
