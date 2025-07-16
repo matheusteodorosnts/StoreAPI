@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: ${DATABASE_IMAGE}
+    ports:
+      - '${DATABASE_PORT}:${DATABASE_PORT}'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    command: npm run start:dev
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+
+volumes:
+  db_data:
