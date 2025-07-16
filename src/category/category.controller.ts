@@ -75,4 +75,19 @@ export class CategoryController {
       categories,
     };
   }
+
+  @Get(':idcategory')
+  async getSpecificProduct(@Param('idcategory') idcategory: string) {
+    const product = await this.prisma.product.findUnique({
+      where: { id: idcategory },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    return {
+      product,
+    };
+  }
 }
